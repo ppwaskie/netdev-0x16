@@ -1,0 +1,69 @@
+% This file is isea.tex.  It contains the formatting instructions for and acts as a template for submissions to ISEA 2015.  It is based on the ICCC  formats and instructions.  It uses the files isea.sty, isea.bst and isea.bib, the first two of which also borrow from AAAI IJCAI formats and instructions.
+% Modified from ICCC.tex by B. Bogart
+
+\documentclass[letterpaper]{article}
+\usepackage{isea}
+\usepackage[pdftex]{graphicx}
+\usepackage{times}
+\usepackage{helvet}
+\usepackage{courier}
+\usepackage[numbers]{natbib}
+\usepackage[normalem]{ulem}
+\useunder{\uline}{\ul}{}
+\pdfinfo{
+/Title (The Anatomy of Networking in High-Frequency Trading)
+/Author (Peter P. Waskiewicz Jr)}
+% The file isea.sty is the style file for ISEA 2015 proceedings.
+%
+\title{The Anatomy of Networking in High-Frequency Trading}
+\author{Peter P. Waskiewicz Jr. (PJ) \\ Jump Trading \\ Chicago, IL, USA \\ pwaskiewicz@jumptrading.com
+\newline
+\newline
+}
+\setcounter{secnumdepth}{0}
+
+\begin{document} 
+\maketitle
+\begin{abstract}
+Networking has always served a number of very diverse environments. From Enterprise to the Cloud, Telco and edge, networking technologies have been able to use a “some sizes fit most” approach. This is good when it comes to supporting these technologies in the Linux kernel.
+
+More specialized environments, such as High Frequency Trading (HFT), have radically different networking requirements. Depending on the use case, one requirement might be that latency is paramount when interfacing with the market exchanges. Another use case might be in the HPC environment, where latency is still paramount, but sustained and reliable throughput is a must across grid networks.
+
+This talk is intended to highlight where the Linux kernel networking stack intersects these requirements for HFT, and where it does not. It will also expand on how latency and jitter within HFT systems compare to “traditional” networking environments. Ultimately this talk is intended to generate discussion where HFT networking needs can help improve the existing intersection points in the kernel, and discuss where further native integration could be achieved.
+\end{abstract}
+
+\section{Keywords}
+
+networking, kernel, ebpf, xdp, offloads, trading, finance
+
+\section{Introduction}
+TBD
+\newline
+\newline
+TBD
+\begin{itemize}
+\item TBD
+\item TBD2
+\end{itemize}
+
+\section{Coming}
+
+TBD
+
+\subsection{If needed}
+
+TBD
+
+\section{Conclusion}
+Coming
+
+\section{Acknowledgments}
+I would like to acknowledge the NetDev 0x16 program committee for the opportunity to submit and invitation to present this paper.
+
+\bibliographystyle{pj-netdev-0x16}
+\bibliography{pj-netdev-0x16}
+
+\section{Author Biographies}
+Peter Waskiewicz Jr (PJ) is a Senior Software Engineer in Jump Trading's core engineering division, focusing on Linux kernel and device driver development, along with other system-level engineering.  Prior to Jump Trading, PJ spent the majority of his professional career at Intel, where he was responsible for writing and maintaining several of the Intel Ethernet Linux drivers, and developing Linux kernel changes for scaling to 10GbE and beyond.  PJ was also a Senior Principal Engineer at NetApp in the SolidFire division, where he was the chief Linux kernel and networking architect for the SolidFire scale-out cloud storage platform.
+
+\end{document}
