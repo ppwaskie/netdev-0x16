@@ -1,0 +1,103 @@
+- Look at what "typical" networking benchmarks look like
+	- What's the setup?
+	- How do you run it?
+	- Why is it so synthentic?
+
+- Can I get a few back-to-back runs going between lucy and pigpen?
+	- Try to show 10GbE perf?
+	- Look for latency jitter
+	- Improve with core affinity
+	- Improve further with core isolation
+
+- Interrupts can still cause pain
+	- NAPI and SOFTIRQ polling will introduce jitter
+	- HARDIRQ will also obviously introduce jitter
+
+- Talk about HFT requirements for networking
+	- jitter kills more than latency
+		- predictability is paramount
+	- Exchanges can present different interfaces
+		- Different market data protocols
+		- Different market network topologies
+		- Can be challenging for one-size-fits-all solutions
+
+- How can AF_XDP help?
+	- Can it help?
+	- Tx is still a big question, with syscall context switch...
+	- Very attractive to pursue a "hotpath" and "slowpath" for traffic
+
+- Can we do more?
+
+- Shift to HPC
+
+- Grid networking can have very different latency profiles
+	- Message-passing semantics much more common
+	- Traditionally more RDMA-based, Infiniband
+
+- Infiniband is still in use, dedicated fabric, lots of existing verb-based SW
+
+- Ethernet-based RDMA technologies still struggling to break through
+	- RoCE
+		- Needs dedicated links, potentially DCB for no-drop behavior
+	- iWARP
+		- TOE's are still complex and a black box
+		  i.e. non-deterministic latency profiles)
+
+	- Can protocols like HOMA, or Tom Herbert's ideas to merge the best of
+	  technologies into an uber stack work?
+
+- Conclusion
+
+
+Flow:
+
+- Traditional networking
+	- Benchmarking
+	- What does reality look like?
+	- How to make it a bit more synthetic (pinning cores, etc.)
+
+- Intro to HFT networking
+	- What constitutes "high-frequency trading"
+	- De-myth about latency
+	- Latency is very important, predictable latency is paramount
+
+- Look at the traditional networking benchmarking
+	- Now take that to HFT networking profiles (non-isolated cores)
+	- Isolate cores, remove scheduler jitter
+	- Next talk about removing context switch jitter (userspace-based stack)
+
+- AF_XDP to the rescue?
+	- Can this solve this issue?
+	- Tx can still be an issue due to the system call involved
+	- Very attractive to pursue a "hotpath" and "slowpath" network pipe
+		- Ideal setup.  Have kernel bypass with full stack for control
+	- Still need to find a way to poll without NAPI?
+
+
+- Move to HPC
+
+- Grid networking can have very different latency profiles
+	- Message-passing semantics much more common
+	- Traditionally more RDMA-based, Infiniband
+
+- Infiniband is still in use, dedicated fabric, lots of existing verb-based SW
+
+- Ethernet-based RDMA technologies still struggling to break through
+	- RoCE
+		- Needs dedicated links, potentially DCB for no-drop behavior
+	- iWARP
+		- TOE's are still complex and a black box
+		  i.e. non-deterministic latency profiles)
+
+	- Can protocols like HOMA, or Tom Herbert's ideas to merge the best of
+	  technologies into an uber stack work?
+
+- Conclusion
+	- Deterministic networking performance is paramount to trading
+	- Traditional network stack techniques have too much jitter
+	- Things like AF_XDP can provide the necessary bypass, but still not
+          completely there yet
+	- Still need to find a way around NAPI or interrupt-driven Rx processing
+          to fully remove jitter
+	- Need to revisit for HPC when other protocols make the network stack
+	  easier to integrate RDMA-like semantics without Infiniband
