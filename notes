@@ -2,11 +2,13 @@
 	- What's the setup?
 	- How do you run it?
 	- Why is it so synthentic?
+	- CPU power states versus reality
 
 - Can I get a few back-to-back runs going between lucy and pigpen?
 	- Try to show 10GbE perf?
 	- Look for latency jitter
 	- Improve with core affinity
+	- Improve with NUMA affinity
 	- Improve further with core isolation
 
 - Interrupts can still cause pain
@@ -51,10 +53,12 @@
 
 Flow:
 
+- Introduction
+
 - Traditional networking
 	- Benchmarking
 	- What does reality look like?
-	- How to make it a bit more synthetic (pinning cores, etc.)
+	- How to make it a bit more synthetic (pinning cores, NUMA, etc.)
 
 - Intro to HFT networking
 	- What constitutes "high-frequency trading"
@@ -64,6 +68,7 @@ Flow:
 - Look at the traditional networking benchmarking
 	- Now take that to HFT networking profiles (non-isolated cores)
 	- Isolate cores, remove scheduler jitter
+	- CPU power states vs. complete predictability
 	- Next talk about removing context switch jitter (userspace-based stack)
 
 - AF_XDP to the rescue?

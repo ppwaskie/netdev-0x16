@@ -27,23 +27,31 @@
 \begin{abstract}
 Networking has always served a number of very diverse environments. From Enterprise to the Cloud, Telco and edge, networking technologies have been able to use a “some sizes fit most” approach. This is good when it comes to supporting these technologies in the Linux kernel.
 
-More specialized environments, such as High Frequency Trading (HFT), have radically different networking requirements. Depending on the use case, one requirement might be that latency is paramount when interfacing with the market exchanges. Another use case might be in the HPC environment, where latency is still paramount, but sustained and reliable throughput is a must across grid networks.
+More specialized environments, such as High-Frequency Trading (HFT), have radically different networking requirements. Depending on the use case, one requirement might be that latency is paramount when interfacing with the market exchanges. Another use case might be in the HPC environment, where latency is still paramount, but sustained and reliable throughput is a must across grid networks.
 
 This talk is intended to highlight where the Linux kernel networking stack intersects these requirements for HFT, and where it does not. It will also expand on how latency and jitter within HFT systems compare to “traditional” networking environments. Ultimately this talk is intended to generate discussion where HFT networking needs can help improve the existing intersection points in the kernel, and discuss where further native integration could be achieved.
 \end{abstract}
 
 \section{Keywords}
 
-networking, kernel, ebpf, xdp, offloads, trading, finance
+networking, kernel, xdp, offloads, trading, finance, performance
 
 \section{Introduction}
-TBD
+Networking technologies have always been the most complex pieces of a modern computing system. Some technologies focus on general network connectivity, such as supporting a mobile device or personal computer, and some technologies focus on Software-Defined Networks, stitching together countless virtual machines and containers within data centers.
 \newline
 \newline
-TBD
+Modern operating systems, such as Linux, have evolved over many years to include very robust network stacks to serve these very diverse needs. Linux has found great success in adoption and datacenter footprint mainly due to the diversity and robustness of its network stack. It powers the majority of the largest Cloud Service Providers in the world, many Enterprise-level deployments, and is behind the largest install-base of handheld OS's in use today, Android.
+\newline
+\newline
+Even with all of this diversity and flexibility, there are still environments where the Linux network stack sacrifices targeted performance for this flexibility. High-Frequency Trading environments, within the Finanical Tech world, have some fairly unique requirements for network behavior and performance.
+\newline
+\newline
+This paper will focus on how HFT networking requirements match up against the diverse network stack capabilities of Linux. It will dive into:
 \begin{itemize}
-\item TBD
-\item TBD2
+\item How synthentic benchmarking of traditional networks stack up to real-world benchmarks of traditional networks
+\item How the synthetic benchmarking resembles the beginning of HFT networking requirements in practice
+\item Analyzing what limitations the Linux network stack has to meet the current HFT requirements for predictable latencies, and what we could do about it
+\item Exploring additional aspects of HFT networking requirements that encompass High-Performance Computing (HPC) grid environments
 \end{itemize}
 
 \section{Coming}
