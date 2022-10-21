@@ -117,6 +117,7 @@ Flow:
 
 Data runs:
 
+Intel(R) Xeon(R) CPU E5-2640 0 @ 2.50GHz
 
 =============================================================================
 netperf -H 192.168.100.2 -t TCP_RR -- -o min_latency,max_latency,mean_latency
