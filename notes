@@ -50,6 +50,12 @@
 
 - Conclusion
 
+Data to try and capture:
+
+- Traditional latency test from lucy to pigpen via 10G (reality)
+- irq affinity on lucy latency test (synthetic)
+- Load the cores and run the latency test again (synthetic plus reality)
+- Isolate the cores and run the latency test again (close to HFT minus irq's)
 
 Flow:
 
@@ -106,3 +112,232 @@ Flow:
           to fully remove jitter
 	- Need to revisit for HPC when other protocols make the network stack
 	  easier to integrate RDMA-like semantics without Infiniband
+
+
+
+Data runs:
+
+
+=============================================================================
+netperf -H 192.168.100.2 -t TCP_RR -- -o min_latency,max_latency,mean_latency
+
+No optimizations
+=============================================================================
+
+Pass 1
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+37,3071,64.42
+
+
+Pass 2
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+54,458,69.91
+
+
+Pass 3
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+54,423,69.50
+
+
+Pass 4
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+54,479,67.40
+
+
+Pass 5
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+54,471,69.10
+
+
+Pass 6
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+54,253,72.99
+
+
+Pass 7
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+53,545,65.99
+
+
+Pass 8
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+54,380,65.49
+
+
+Pass 9
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+54,320,70.55
+
+
+Pass 10
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+48,325,66.80
+
+
+=============================================================================
+netperf -H 192.168.100.2 -T 6 -t TCP_RR -- -o min_latency,max_latency,mean_latency
+
+Pin a CPU, no interrupt affinity
+=============================================================================
+
+Pass 1
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+58,581,67.87
+
+
+Pass 2
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+48,399,64.41
+
+
+Pass 3
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+49,368,70.98
+
+
+Pass 4
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+48,351,63.48
+
+
+Pass 5
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+49,417,68.68
+
+
+Pass 6
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+53,455,76.50
+
+
+Pass 7
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+49,505,63.88
+
+
+Pass 8
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+48,348,64.51
+
+
+Pass 9
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+49,325,65.51
+
+
+Pass 10
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+49,502,63.73
+
+
+=============================================================================
+netperf -H 192.168.100.2 -T 6 -t TCP_RR -- -o min_latency,max_latency,mean_latency
+
+Pin a CPU, interrupt affinity
+=============================================================================
+
+Pass 1
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+49,614,55.72
+
+
+Pass 2
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+46,409,54.07
+
+
+Pass 3
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+45,320,54.08
+
+
+Pass 4
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+45,499,50.78
+
+
+Pass 5
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+45,264,53.60
+
+
+Pass 6
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+45,367,54.00
+
+
+Pass 7
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+44,391,50.26
+
+
+Pass 8
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+45,417,53.43
+
+
+Pass 9
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+46,711,54.13
+
+
+Pass 10
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+44,485,50.90
+
+
+=============================================================================
+netperf -H 192.168.100.2 -T 6 -t TCP_RR -- -o min_latency,max_latency,mean_latency
+
+Pin a CPU, interrupt affinity, isolate the CPU
+=============================================================================
+
+
+Pass 1
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+51,484,69.03
+
+
+Pass 2
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+47,319,54.84
+
+
+Pass 3
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+47,425,66.12
+
+
+Pass 4
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+49,669,74.71
+
+
+Pass 5
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+47,1434,56.87
+
+
+Pass 6
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+48,1902,59.86
+
+
+Pass 7
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+48,6403,71.90
+
+
+Pass 8
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+47,340,55.85
+
+
+Pass 9
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+47,316,58.93
+
+
+Pass 10
+Minimum Latency Microseconds,Maximum Latency Microseconds,Mean Latency Microseconds
+47,4357,61.93
