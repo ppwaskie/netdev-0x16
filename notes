@@ -1,3 +1,6 @@
+Make sure to add disclaimer that Jump opinions are not expressed here
+
+
 - Look at what "typical" networking benchmarks look like
 	- What's the setup?
 	- How do you run it?
@@ -118,6 +121,8 @@ Flow:
 Data runs:
 
 Intel(R) Xeon(R) CPU E5-2640 0 @ 2.50GHz
+Mellanox SN2100 switch
+Intel XXV710 @ 10GbE, Broadcom bn2x @ 10GbE (DA-Twinax)
 
 =============================================================================
 netperf -H 192.168.100.2 -t TCP_RR -- -o min_latency,max_latency,mean_latency
