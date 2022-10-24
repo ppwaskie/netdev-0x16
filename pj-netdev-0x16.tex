@@ -53,14 +53,22 @@ This paper will focus on how HFT networking requirements match up against the di
 \item Analyzing what limitations the Linux network stack has compared to current HFT requirements for predictable latencies, and what might be done about it
 \item Exploring additional aspects of HFT networking requirements that encompass High-Performance Computing (HPC) grid environments, and how the Linux network stack compares to those requirements
 \end{itemize}
+\let\thefootnote\relax\footnotetext{The views expressed in this paper are the author's only, and should not be attributed to Jump Trading.}
+\section{"Traditional Networking", and the Synthetic Benchmarking Problem}
+Networking technology is one that fits into every modern workload in some fashion. In more "traditional" settings, such as datacenter-based networks (Enterprise), or disaggregated networks (Cloud), trying to nail down performance can be a difficult task. Very diverse environments create unpredictable workloads and interrupts that can introduce large amounts of jitter. When trying to benchmark these workloads, the benchmarking tests must be fairly synthetic to reduce or eliminate much of this jitter. But herein lies the issue; the benchmarks don't capture what happens in a production setting.
+\subsection{Benchmarking Setup}
+All benchmarks were captured via \texttt{netperf} using the \texttt{TCP\_RR} test. The system-under-test (SUT) is an Intel\textsuperscript{\textregistered} Xeon\textsuperscript{\textregistered} ES-2640 with a Broadcom bnx2x 10GbE adapter running stock Fedora 36.  The peer system is an Intel\textsuperscript{\textregistered} Xeon\textsuperscript{\textregistered} Platinum 8180 with an Intel\textsuperscript{\textregistered} 82599ES 10GbE adapter, running Gentoo Linux.  The two systems are connected to a Mellanox SN2100 switch via Direct-Attach Twinax cables.
+\subsection{Benchmark 1: Real-World Configuration}
+The simplest benchmark to run is one without any tuning.  As one might expect, the results don't look terribly great.
+\newline
 
-\section{Coming}
+\begin{figure}[h]
+\includegraphics[width=3.31in]{netperf-no-opt.png}
+\caption{Netperf with no optimizations}
+\label{netperf-no-opt}
+\end{figure}
 
-TBD
-
-\subsection{If needed}
-
-TBD
+As seen in Figure \ref{netperf-no-opt}, it can be observed that every run produced drastically different latency figures.
 
 \section{Conclusion}
 Coming
@@ -72,6 +80,6 @@ I would like to acknowledge the NetDev 0x16 program committee for the opportunit
 \bibliography{pj-netdev-0x16}
 
 \section{Author Biography}
-Peter Waskiewicz Jr (PJ) is a Senior Software Engineer in Jump Trading's core engineering division, focusing on Linux kernel and device driver development, along with other system-level engineering.  Prior to Jump Trading, PJ spent the majority of his professional career at Intel, where he was responsible for writing and maintaining several of the Intel Ethernet Linux drivers, and developing Linux kernel changes for scaling to 10GbE and beyond.  PJ was also a Senior Principal Engineer at NetApp in the SolidFire division, where he was the chief Linux kernel and networking architect for the SolidFire scale-out cloud storage platform.
+Peter Waskiewicz Jr (PJ) is a Senior Software Engineer in Jump Trading's core engineering division, focusing on Linux kernel and device driver development, along with other system-level engineering.  Prior to Jump Trading, PJ spent the majority of his career at Intel, where he was responsible for writing and maintaining several of the Intel Ethernet Linux device drivers, and developing Linux kernel changes for scaling to 10GbE and beyond.  PJ was also a Senior Principal Engineer at NetApp in the SolidFire division, where he was the chief Linux kernel and networking architect for the SolidFire scale-out cloud storage platform. He is also an adjunct faculty at Portland State University, teaching OS and Device Drivers in the Electrical and Computer Engineering Department.
 
 \end{document}
