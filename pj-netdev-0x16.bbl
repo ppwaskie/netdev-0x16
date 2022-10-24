@@ -1,15 +1,26 @@
 \begin{thebibliography}{}
 
-\bibitem[\protect\citeauthoryear{Tausanovitch}{2016}]{smartnic2016}
-Nick Tausanovitch
-\newblock 2016.
-\newblock {\em SmartNICs: Give your OpenStack network a boost}
-\newblock https://www.infoworld.com/article/3125022/networking/smartnics-give-your-openstack-network-a-boost.html
+\bibitem[\protect\citeauthoryear{Waskiewicz}{2010}]{nema2010}
+Luca Deri, Joseph Gasparakis, PJ Waskiewicz, Francesco Fusco
+\newblock 2010.
+\newblock {\em Wire-Speed Hardware-Assisted Traffic Filtering with Mainstream Network Adapters}
+\newblock NEMA, Proceedings from First International Workshop on Network Embedded Management and Applications
 
-\bibitem[\protect\citeauthoryear{Borkmann}{2017}]{borkmann2017}
-Daniel Borkmann
-\newblock 2017.
-\newblock {\em bpf: add meta pointer for direct access}.
-\newblock https://www.spinics.net/lists/netdev/msg456525.html
+\bibitem[\protect\citeauthoryear{Deri}{2010}]{luca2010}
+Luca Deri, Francesco Fusco
+\newblock 2010.
+\newblock {\em High Speed Network Traffic Analysis with Commodity Multi-core Systems}
+\newblock https://luca.ntop.org/imc2010.pdf
 
+\bibitem[\protect\citeauthoryear{netperf}{2008}]{netperf}
+Rick Jones, et al
+\newblock 2008.
+\newblock {\em Netperf main github site}
+\newblock https://github.com/HewlettPackard
+
+\bibitem[\protect\citeauthoryear{Waskiewicz}{2012}]{irqbalance}
+Neil Horman, PJ Waskiewicz, et al
+\newblock 2012.
+\newblock {\em irqbalance main github site}
+\newblock https://github.com/Irqbalance/irqbalance
 \end{thebibliography}

@@ -1,6 +1,21 @@
-Make sure to add disclaimer that Jump opinions are not expressed here
+*Make sure to add disclaimer that Jump opinions are not expressed here
+
+*Get the usecs text formatted
 
 netperf reference in bibliography?
+
+irqbalance footnote
+
+L. Deri, J. Gasparakis, P. Waskiewicz Jr, and
+F. Fusco. Wire-Speed Hardware-Assisted Traffic
+Filtering with Mainstream Network Adapters. In
+NEMA’10: Proc. of the First Int. Workshop on
+Network Embedded Management and Applications,
+page to appear, 2010
+
+High Speed Network Traffic Analysis with Commodity
+Multi-core Systems
+https://luca.ntop.org/imc2010.pdf
 
 - Look at what "typical" networking benchmarks look like
 	- What's the setup?

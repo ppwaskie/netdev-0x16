@@ -57,10 +57,12 @@ This paper will focus on how HFT networking requirements match up against the di
 \section{"Traditional Networking", and the Synthetic Benchmarking Problem}
 Networking technology is one that fits into every modern workload in some fashion. In more "traditional" settings, such as datacenter-based networks (Enterprise), or disaggregated networks (Cloud), trying to nail down performance can be a difficult task. Very diverse environments create unpredictable workloads and interrupts that can introduce large amounts of jitter. When trying to benchmark these workloads, the benchmarking tests must be fairly synthetic to reduce or eliminate much of this jitter. But herein lies the issue; the benchmarks don't capture what happens in a production setting.
 \subsection{Benchmarking Setup}
-All benchmarks were captured via \texttt{netperf} using the \texttt{TCP\_RR} test. The system-under-test (SUT) is an Intel\textsuperscript{\textregistered} Xeon\textsuperscript{\textregistered} ES-2640 with a Broadcom bnx2x 10GbE adapter running stock Fedora 36.  The peer system is an Intel\textsuperscript{\textregistered} Xeon\textsuperscript{\textregistered} Platinum 8180 with an Intel\textsuperscript{\textregistered} 82599ES 10GbE adapter, running Gentoo Linux.  The two systems are connected to a Mellanox SN2100 switch via Direct-Attach Twinax cables.
+All benchmarks were captured via {\small{\texttt{netperf}} \cite{netperf} using the {\small{\texttt{TCP\_RR}} test. The system-under-test (SUT) is an Intel\textsuperscript{\textregistered} Xeon\textsuperscript{\textregistered} ES-2640 with a Broadcom bnx2x 10GbE adapter running stock Fedora 36.  The peer system is an Intel\textsuperscript{\textregistered} Xeon\textsuperscript{\textregistered} Platinum 8180 with an Intel\textsuperscript{\textregistered} 82599ES 10GbE adapter, running Gentoo Linux.  The two systems are connected to a Mellanox SN2100 switch via Direct-Attach Twinax cables.
+\newline
+\newline
+Note: this paper does not intend to serve as a reference on tuning systems for optimal scaling. Much of the techniques discussed in this paper have been used in many previous publications and presentations over the years. Two of those publications that this paper draws techniques from are here \cite{nema2010} and here \cite{luca2010}.
 \subsection{Benchmark 1: Real-World Configuration}
 The simplest benchmark to run is one without any tuning.  As one might expect, the results don't look terribly great.
-\newline
 
 \begin{figure}[h]
 \includegraphics[width=3.31in]{netperf-no-opt.png}
@@ -68,7 +70,56 @@ The simplest benchmark to run is one without any tuning.  As one might expect, t
 \label{netperf-no-opt}
 \end{figure}
 
-As seen in Figure \ref{netperf-no-opt}, it can be observed that every run produced drastically different latency figures.
+As seen in Figure \ref{netperf-no-opt}, one can see that every run produced drastically different latency figures.  The average minimum latency is 51.6 \textmu{secs}, with an average mean latency of 68.7 \textmu{secs}.  So not only is the jitter and variability significant, the latency numbers themselves are very high for an isolated test such as this.
+\newline
+\newline
+The effects of no CPU affinity, no interrupt affinity, no cache isolation, all contribute to latency figures being rather poor. But the biggest issue is those latency figures are completely unpredictable, causing undeterministic workload behavior.
+\subsection{Benchmark 2: CPU affinity}
+One method to reduce jitter in a workload, and therefore increase the predictable performance of that workload, is to pin the workload to a particular CPU or set of CPUs. This allows data to stay cache-hot, as well as trying to keep memory buffers allocated from the local NUMA node.
+
+\begin{figure}[h]
+\includegraphics[width=3.31in]{netperf-cpu-pin-no-int-affinity.png}
+\caption{Netperf with CPU pinned}
+\label{netperf-cpu-pin-no-int-affinity}
+\end{figure}
+
+In Figure \ref{netperf-cpu-pin-no-int-affinity}, all of the tests were run while pinned to CPU 6 on NUMA node 0. This was chosen since the NIC itself is also in a PCIe slot that is on the PCIe tree attached to NUMA node 0 on this specific platform.
+\newline
+\newline
+Overall jitter has improved slightly, and overall latency has also improved slightly.  The average minimum latency across all tests is 50.1 \textmu{secs}, a 1.5 \textmu{sec} delta. The average mean latency is 67.6 \textmu{secs}, another 1.1 \textmu{sec} improvement over the previous benchmark. While these aren't significant improvements, they are still improvements that can have significant impact in the world of High-Frequency Trading.  More on that later.
+
+\subsection{Benchmark 3: CPU affinity, Interrupt affinity}
+Taking the tuning tuning and benchmarking to the next level, the interrupt assigned to the corresponding NIC queue or queue pair can be pinned to a CPU. In the hope of being obvious, the CPU chosen should be the same one running the workload. In the example so far, that would be CPU 6.  This also requires the {\small \texttt{irqbalance}} daemon to be stopped or killed, or use irqbalance policy scripts \cite{irqbalance} to manually assign device interrupt affinity within the default balancing scheme.
+
+\begin{figure}[h]
+\includegraphics[width=3.31in]{netperf-cpu-pin-int-affinity.png}
+\caption{Netperf with CPU pinned, Interrupt pinned}
+\label{netperf-cpu-pin-int-affinity}
+\end{figure}
+
+Figure \ref{netperf-cpu-pin-int-affinity} illustrates even better latency and jitter improvements. With an average minimum latency of 45.4 \textmu{secs} and average mean latency of 53.1 \textmu{secs}, these are improvements of 6.2 \textmu{secs} and 15.6 \textmu{secs}, respectively.
+\newline
+\newline
+As we're observing better predictable latency, we are also approaching configurations that are very artificial. Most workloads can't operate with this level of CPU and interrupt pinning, since other workloads typically run on the same platforms, and would be negatively impacted by these very specific tunings.
+
+\subsection{Benchmark 4: CPU affinity, Interrupt affinity, CPU isolation}
+One last OS-level optimization that can be done is isolation of the CPU or CPU's themselves.  Isolating a CPU removes it from the OS scheduler's view, and keeps it parked at idle until a task is explicitly scheduled to run on that CPU.  This can be done via the {\small \texttt{taskset}} command, or the CPU affinity parameter of {\small \texttt{netperf}}.
+\newline
+\newline
+This isolation can be done by using the {\small \texttt{isolcpus}} kernel boot parameter, or it can be done via other runtime mechanisms. For this test, the {\small \texttt{isolcpus}} was used to completely isolate CPU 6, the same CPU that {\small \texttt{netperf}} has been pinned to in the previous two benchmarks.
+
+\begin{figure}[h]
+\includegraphics[width=3.31in]{netperf-cpu-pin-int-affinity-cpu-isol-normalized.png}
+\caption{Netperf with CPU pinned, Interrupt pinned, CPU isolated}
+\label{netperf-cpu-pin-int-affinity-cpu-isol-normalized}
+\end{figure}
+
+In Figure \ref{netperf-cpu-pin-int-affinity-cpu-isol-normalized}, the data here has been normalized. The maximum latencies in this dataset were drastically variable, making the min and average latencies difficult to analyze.  In this dataset, the average minimum and average mean latencies are 47.8 \textmu{secs} and 60.9 \textmu{secs}.  This is only a 3.8 \textmu{secs} and 7.8 \textmu{secs} improvement from the baseline, which is worse than without isolating the CPU.
+\newline
+\newline
+A few factors come into play to explain this drop in predictable latency when the CPU is isolated. The biggest factor is the receive/Rx side of processing is done via {\small \texttt{NAPI}} in {\small \texttt{SOFTIRQ}} context. These context switches are always expensive.  When they happen without the process scheduler involved, e.g. the CPU has been isolated, then more efficient overall use of the CPU is compromised. If improvement is desired, then one needs to look at tunables and changes outside of the kernel itself today.
+
+\subsection{Benchmark 5: CPU affinity, Interrupt affinity, CPU isolation, and Polling}
 
 \section{Conclusion}
 Coming
