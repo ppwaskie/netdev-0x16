@@ -1,8 +1,10 @@
 *Make sure to add disclaimer that Jump opinions are not expressed here
 
+Note to Grid network from Wikipedia
+
 *Get the usecs text formatted
 
-Cite io_uring
+*Cite io_uring
 
 *netperf reference in bibliography?
 
@@ -105,6 +107,9 @@ Flow:
 		- Ideal setup.  Have kernel bypass with full stack for control
 	- Still need to find a way to poll without NAPI?
 
+- HFT with kernel bypass
+
+Trading strategies assume predictable latency
 
 - Move to HPC
 

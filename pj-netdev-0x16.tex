@@ -134,14 +134,55 @@ In Figure \ref{netperf-cpu-pin-cpu-isol-polling}, our predictable latencies have
 These numbers, along with the remaining jitter, are very synthetic benchmarks that are not practical for traditional application and network workloads.  However, the modifications, both OS and application, are typical examples for how High-Frequency Trading network environments operate in reality.  And this is where the anatomy of these HFT-based networks begin to exist.
 
 \section{HFT Networking Basics: The Trading Puzzle}
+High-Frequency Trading firms and other related Financial Technology firms have notoriously been very secretive regarding their technologies. This includes usage of open-source software, or custom-built software frameworks where current OSS solutions fall short.  This approach creates maintenance burdens, but also doesn't give back to OSS solutions where it can make sense to do so.
+\newline
+\newline
+While custom solutions can close performance gaps and provide predictable latencies, these solutions still need to exist in a world where the financial exchanges use standard networking protocols.  Exchanges such as the Chicago Mercantile Exchange (CME), NYSE, Eurex, and many others, all have their own protocols and data structure formats.  But ultimately, they all communicate using standard Ethernet and other standard upper-layer protocols. They also have been mainly standardized on 10GbE networking. Because of this speed and feed standard, HFT networking typically doesn't care about the actual size of the bandwidth pipe available. The predictable latency and ability to eliminate jitter is paramount to the HFT networking model.
+
+\subsection{Trading Strategies vs. Latency}
+Within the financial world, trading strategies have always been present.  The famous adage of "buy low, sell high" is one of the most obvious, and sound strategies.  But how does one know when "low" is low, and "high" is high?
+\newline
+\newline
+Trading strategies are the heart and soul of any financial model. Whether it's through broker accounts with individual-level trading, or HFT-based trading, the fact is the strategies are all data-driven.  For HFT strategies, these can vary wildly what the strategy triggers on.  Is it some market event, news headline, or some other mathematical and statistical pattern?  Whatever the approach, data is crunched, and a trading decision is made. When this decision is executed, the trading decision itself must be executed with the financial exchange as soon as possible.  The longer it takes for that decision to be acted upon decreases the likelihood that the circumstances leading to the decision will still be in play within the exchange.  In other words: someone else will also figure out the same decision, and will try and execute their trade before you.  If we scale this single event up to thousands of trades, or even hundreds of thousands, this latency between decision and execution is incredibly important. Taking it another step, the {\it predictable latency} is absolutely paramount.
+\newline
+\newline
+Trading strategies assume that once a decision is made, it will be immediately executed. This translates to the elimination of as much latency in the network path as possible. From a Linux perspective, that does mean kernel bypass.  Having software push data directly to hardware, and then hardware dumping data directly to userspace applications, is the most effective way to eliminate latency.  But this also requires an environment that eliminates as much jitter as possible. Referring back to Figure \ref{netperf-cpu-pin-cpu-isol-polling}, this synthetic environment with CPU isolation, CPU affinity, and application-awareness to poll for data, is exactly how the HFT environment needs to operate to achieve predictable latency.
+
+\subsection{Proposal: AF\_XDP to the Rescue?}
+Kernel bypass has been frowned upon by kernel developers since the beginning of time. Why bypass a network stack that is hardened and validated in installations across the globe?  But the realities of HFT networking and predictable latency drives that decision to bypass the networking stack.
+\newline
+\newline
+{\small \texttt{AF\_XDP}} \cite{afxdp} may be a solution to converge usage of the Linux network stack, and also provide the bypass semantics needed by HFT for predictable latency. If a device driver can be fully converted to a polling driver, meaning {\small \texttt{NAPI}} and {\small \texttt{SOFTIRQ}} are removed from the equation, then the context switching and interrupt-related jitter can be eliminated.
+\newline
+\newline
+If such a polling driver existed, and a proper XDP program was loaded with an {\small \texttt{AF\_XDP}-attached socket, then hotpath data coming in from an exchange could easily be pushed to applications polling on incoming data. The huge advantage here though, is any traffic that is not critical to the hotpath and exchange traffic could be routed to the kernel, since it wouldn't trigger a hit in the {\small \texttt{AF\_XDP}} application. Traffic such as LLDP or other control traffic would not need to be handled in custom ways, and could let the kernel itself handle it. This opens up many possibilities that can eliminate custom solutions, and gain benefits from using the native Linux network stack.
+\newline
+\newline
+Why hasn't this transition been done yet? The main issue at the time of this writing is {\small \texttt{AF\_XDP}} still has limitations with eliminating context switching on the Tx/transmit side. It still requires a {\small \texttt{sendmsg()}} in the simplest situations, which the system call itself would introduce latency and jitter through the context switch.  This is still an area the kernel can improve and close this gap, providing kernel bypass with kernel stack integration.
 
 \section{HFT and HPC: Scaling Different Networks}
+High-Frequency Trading is driven by the quantitative research side that crunches massive amounts of data to derive trading strategies. In order to do this, a completely separate computing environment is typically required. These large High-Performance Computing, or HPC, environments, are typically a Grid network.
+\newline
+\newline
+Grid networks typically operate on large datasets, potentially in the petabytes-range. While this amount of data could require very large data pipes, the effectiveness of the Grid network relies solely on the latency between nodes. If an application stalls waiting for results or extra data to crunch on, that damages the viability of the strategy. And if the network interconnect is to blame, then that latency is something that needs to be eliminated.
+
+\subsection{HPC and RDMA}
+RDMA, or Remote DMA, is a protocol and technique to try and eliminate latency on a network interconnect. RDMA networks also typically use Infiniband as their link-layer protocol, instead of Ethernet. This means these networks have dedicated switches and Infiniband adapters, and require different management, driver stacks, and software stacks, to run the RDMA and Message Passing Interface (MPI) data streams.
+\newline
+\newline
+RDMA is a very popular choice in HPC and Grid networks, given its low and very predictable latencies. However, as Ethernet-based RDMA technologies continue to evolve and improve, such as RDMA over Converged Ethernet (RoCE), moving to these more standard link-layer networks is becoming more attractive.
+
+\subsection{HPC Without RDMA?}
+New techniques for passing data through the kernel, such as {\small \texttt{io\_uring}} \cite{iouring}, are showing serious promise. {\small \texttt{io\_uring}} started as a replacement for {\small \texttt{libaio}}, but has grown well beyond that initial focus area. The move towards using it for network traffic may upend the traditional BSD socket API. This could be a very strong potential for HPC networks to use instead of RDMA.
+\newline
+\newline
+Another promising protocol is Homa \cite{homa}. It is meant to replace other datacenter protocols, and promising very low latency. An interesting approach though is that Homa can be used outside the kernel with kernel bypass, or as a protocol within the kernel stack.  This is still fairly early in development, but shows great potential to be a candidate for HPC and HFT networks alike.
 
 \section{Conclusion}
 High-Frequency Trading has very demanding and unique requirements for networking. On the trading side, predictable latency is key for the success of trading algorithms and strategies. Without the predictable latency, these strategies will fail, negatively impacting both the Trading Firm, but also the markets themselves.  But the custom nature of many things in the HFT space has become more complex to maintain, and any opportunity that the kernel can provide to ease that custom maintenance burden is very welcome.  "Kernel-bypass-with-the-kernel" with {\small \texttt{AF\_XDP}} is a very promising operating model. Eliminating the context switches, and then providing kernel-managed polling models, will further narrow the gaps.
 \newline
 \newline
-In the HPC space, RDMA-based technologies can continue converging to more common protocol and hardware technologies.  Promising technologies such as {\small \texttt{io\_uring}}, and new protocols such as Homa \cite{homa}, continue to narrow the gap between highly customized networks, and something that the kernel can provide out of the box.
+In the HPC space, RDMA-based technologies can continue converging to more common protocol and hardware technologies.  Promising technologies such as {\small \texttt{io\_uring}} \cite{iouring}, and new protocols such as Homa \cite{homa}, continue to narrow the gap between highly customized networks, and something that the kernel can provide out of the box.
 \newline
 \newline
 As these technologies continue to move forward, the HFT community needs to continue engaging with the Linux kernel community to help guide this path to predictable latency on any workload.

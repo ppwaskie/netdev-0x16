@@ -31,4 +31,16 @@ Behnam Montazeri, Yilong Li, Mohammad Alizadeh, John Ousterhout
 \newblock {SIGCOMM, Proceedings of the 2018 Conference of the ACM Special Interest Group on Data Communication}
 \newblock {Budapest, Hungary}
 
+\bibitem[\protect\citeauthoryear{Axboe}{2019}]{iouring}
+Jens Axboe
+\newblock 2019.
+\newblock {\em Efficient IO with io\_ring}
+\newblock https://kernel.dk/io\_uring.pdf
+
+\bibitem[\protect\citeauthoryear{Topel}{2018}]{afxdp}
+Jonathan Corbet, Bj\"{o}rn T\"{o}pel
+\newblock 2018.
+\newblock {\em Accelerating networking with AF\_XDP}
+\newblock https://lwn.net/Articles/750845/
+
 \end{thebibliography}
