@@ -23,4 +23,12 @@ Neil Horman, PJ Waskiewicz, et al
 \newblock 2012.
 \newblock {\em irqbalance main github site}
 \newblock https://github.com/Irqbalance/irqbalance
+
+\bibitem[\protect\citeauthoryear{Ousterhout}{2018}]{homa}
+Behnam Montazeri, Yilong Li, Mohammad Alizadeh, John Ousterhout
+\newblock 2018.
+\newblock {\em Homa: A Receiver-Driven Low-Latency Transport Protocol Using Network Priorities}
+\newblock {SIGCOMM, Proceedings of the 2018 Conference of the ACM Special Interest Group on Data Communication}
+\newblock {Budapest, Hungary}
+
 \end{thebibliography}

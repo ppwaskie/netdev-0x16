@@ -120,9 +120,31 @@ In Figure \ref{netperf-cpu-pin-int-affinity-cpu-isol-normalized}, the data here 
 A few factors come into play to explain this drop in predictable latency when the CPU is isolated. The biggest factor is the receive/Rx side of processing is done via {\small \texttt{NAPI}} in {\small \texttt{SOFTIRQ}} context. These context switches are always expensive.  When they happen without the process scheduler involved, e.g. the CPU has been isolated, then more efficient overall use of the CPU is compromised. If improvement is desired, then one needs to look at tunables and changes outside of the kernel itself today.
 
 \subsection{Benchmark 5: CPU affinity, Interrupt affinity, CPU isolation, and Polling}
+When OS-level optimizations aren't sufficient to get complete predictable latencies, one must turn to application modifications. In this benchmark, some local changes were made to {\small \texttt{netperf}} to use local patches that polled for incoming Rx traffic. This also required changes to the {\small \texttt{bnx2x}} driver to not use interrupts, especially {\small \texttt{NAPI}}, to process incoming Rx traffic. The overall effect is the application, running on an isolated CPU core, never context switches to push or pull data from the NIC.
+
+\begin{figure}[h]
+\includegraphics[width=3.31in]{netperf-cpu-pin-cpu-isol-polling.png}
+\caption{Netperf with CPU pinned, CPU isolated, Application polling}
+\label{netperf-cpu-pin-cpu-isol-polling}
+\end{figure}
+
+In Figure \ref{netperf-cpu-pin-cpu-isol-polling}, our predictable latencies have tightened up very nicely, plus our overall latencies have dropped from our baseline.  With an average min latency of 41.9 \textmu{secs} and average mean latency of 56.3 \textmu{secs}, these targets are 9.3 \textmu{secs} and 12.4 \textmu{secs} better than the baseline. With this specific platform, hardware, and switch, this is approaching the best case this setup is capable of.
+\newline
+\newline
+These numbers, along with the remaining jitter, are very synthetic benchmarks that are not practical for traditional application and network workloads.  However, the modifications, both OS and application, are typical examples for how High-Frequency Trading network environments operate in reality.  And this is where the anatomy of these HFT-based networks begin to exist.
+
+\section{HFT Networking Basics: The Trading Puzzle}
+
+\section{HFT and HPC: Scaling Different Networks}
 
 \section{Conclusion}
-Coming
+High-Frequency Trading has very demanding and unique requirements for networking. On the trading side, predictable latency is key for the success of trading algorithms and strategies. Without the predictable latency, these strategies will fail, negatively impacting both the Trading Firm, but also the markets themselves.  But the custom nature of many things in the HFT space has become more complex to maintain, and any opportunity that the kernel can provide to ease that custom maintenance burden is very welcome.  "Kernel-bypass-with-the-kernel" with {\small \texttt{AF\_XDP}} is a very promising operating model. Eliminating the context switches, and then providing kernel-managed polling models, will further narrow the gaps.
+\newline
+\newline
+In the HPC space, RDMA-based technologies can continue converging to more common protocol and hardware technologies.  Promising technologies such as {\small \texttt{io\_uring}}, and new protocols such as Homa \cite{homa}, continue to narrow the gap between highly customized networks, and something that the kernel can provide out of the box.
+\newline
+\newline
+As these technologies continue to move forward, the HFT community needs to continue engaging with the Linux kernel community to help guide this path to predictable latency on any workload.
 
 \section{Acknowledgments}
 I would like to acknowledge the NetDev 0x16 program committee for the opportunity to submit and invitation to present this paper.

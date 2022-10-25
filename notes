@@ -2,18 +2,20 @@
 
 *Get the usecs text formatted
 
-netperf reference in bibliography?
+Cite io_uring
 
-irqbalance footnote
+*netperf reference in bibliography?
 
-L. Deri, J. Gasparakis, P. Waskiewicz Jr, and
+*irqbalance footnote
+
+*L. Deri, J. Gasparakis, P. Waskiewicz Jr, and
 F. Fusco. Wire-Speed Hardware-Assisted Traffic
 Filtering with Mainstream Network Adapters. In
 NEMA’10: Proc. of the First Int. Workshop on
 Network Embedded Management and Applications,
 page to appear, 2010
 
-High Speed Network Traffic Analysis with Commodity
+*High Speed Network Traffic Analysis with Commodity
 Multi-core Systems
 https://luca.ntop.org/imc2010.pdf
 
